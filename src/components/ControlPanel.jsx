@@ -1,5 +1,6 @@
 import React from 'react';
-import { Box, Button, Grid, Paper, Slider } from '@mui/material';
+import { Box, Button, Grid, Paper, Slider, Select, MenuItem } from '@mui/material';
+import { guideImages } from '../constants/images';
 
 const ControlPanel = ({ 
   brushSize, 
@@ -7,7 +8,9 @@ const ControlPanel = ({
   onEraser, 
   isEraser, 
   onClear,
-  guideImage
+  guideImage,
+  onGuideSelect,
+  selectedGuideId
 }) => (
   <Grid 
     item xs={2}
@@ -46,6 +49,17 @@ const ControlPanel = ({
           "No guide image"
         )}
       </Box>
+      <Select
+        value={selectedGuideId}
+        onChange={onGuideSelect}
+        sx={{ width: '150px', marginBottom: 2 }}
+      >
+        {guideImages.map((guide) => (
+          <MenuItem key={guide.id} value={guide.id}>
+            {guide.name}
+          </MenuItem>
+        ))}
+      </Select>
       <Box sx={{ marginBottom: 2, marginTop: 2 }}>
         <p style={{ margin: '0 0 8px 0' }}>Brush Size</p>
         <Slider
