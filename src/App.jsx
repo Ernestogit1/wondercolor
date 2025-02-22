@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Box, Grid } from '@mui/material';
 import bg from './assets/bg.png';
 import board from './assets/board.png';
@@ -34,6 +34,13 @@ const App = () => {
   const paletteGroup1 = [palette1, palette2, palette3, palette4, palette5, palette6, palette7];
   const paletteGroup2 = [palette8, palette9, palette10, palette11, palette12, palette13];
   const paletteGroup3 = [palette14, palette15, palette16, palette17, palette18, palette19, palette20];
+  const [selectedColor, setSelectedColor] = useState('#000000');
+
+  const handleColorSelect = (palette) => {
+    // Extract color from palette filename
+    const colorCode = palette.split('/').pop().split('.')[0];
+    setSelectedColor(`#${colorCode}`);
+  };
 
   return (
     <Box
@@ -50,10 +57,10 @@ const App = () => {
     >
       <Logo logo={logo} />
       <Grid container spacing={1} sx={{ width: '90%', margin: '0 auto' }}>
-        <PaletteColumn palettes={paletteGroup1} />
-        <PaletteColumn palettes={paletteGroup2} />
-        <PaletteColumn palettes={paletteGroup3} />
-        <DrawingBoard board={board} />
+        <PaletteColumn palettes={paletteGroup1} onSelectColor={handleColorSelect} />
+        <PaletteColumn palettes={paletteGroup2} onSelectColor={handleColorSelect} />
+        <PaletteColumn palettes={paletteGroup3} onSelectColor={handleColorSelect} />
+        <DrawingBoard selectedColor={selectedColor} board={board}/>
         <ControlPanel />
       </Grid>
     </Box>
