@@ -1,39 +1,51 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { Grid } from '@mui/material';
 
-const DrawingBoard = ({ selectedColor, board }) => {
+const DrawingBoard = ({ selectedColor, board, brushSize, isEraser, onRef }) => {
   const canvasRef = useRef(null);
   const [isDrawing, setIsDrawing] = useState(false);
   const [context, setContext] = useState(null);
+  const [drawLayer, setDrawLayer] = useState(null);
+  const [backgroundImage, setBackgroundImage] = useState(null);
 
   useEffect(() => {
     const canvas = canvasRef.current;
     const ctx = canvas.getContext('2d');
     
-    // Set canvas size
-    canvas.width = 700;
-    canvas.height = 650;
+    canvas.width = 1000;
+    canvas.height = 800;
     
-    // Load and draw the background image
-    const backgroundImage = new Image();
-    backgroundImage.src = board;
-    backgroundImage.onload = () => {
-      ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height);
+    // Create a separate canvas for drawing
+    const drawingCanvas = document.createElement('canvas');
+    drawingCanvas.width = canvas.width;
+    drawingCanvas.height = canvas.height;
+    const drawCtx = drawingCanvas.getContext('2d');
+    setDrawLayer(drawCtx);
+    
+    // Load and store the background image
+    const bgImage = new Image();
+    bgImage.src = board;
+    bgImage.onload = () => {
+      setBackgroundImage(bgImage);
+      ctx.drawImage(bgImage, 0, 0, canvas.width, canvas.height);
     };
-    
-    // Set default styles
-    ctx.strokeStyle = selectedColor || '#000000';
-    ctx.lineWidth = 2;
-    ctx.lineCap = 'round';
     
     setContext(ctx);
   }, [board]);
 
   useEffect(() => {
-    if (context) {
-      context.strokeStyle = selectedColor || '#000000';
+    if (drawLayer) {
+      drawLayer.strokeStyle = isEraser ? '#FFFFFF' : selectedColor;
+      drawLayer.lineWidth = brushSize;
+      drawLayer.lineCap = 'round';
+      
+      if (isEraser) {
+        drawLayer.globalCompositeOperation = 'destination-out';
+      } else {
+        drawLayer.globalCompositeOperation = 'source-over';
+      }
     }
-  }, [selectedColor]);
+  }, [selectedColor, brushSize, isEraser]);
 
   const startDrawing = (e) => {
     const rect = canvasRef.current.getBoundingClientRect();
@@ -42,8 +54,8 @@ const DrawingBoard = ({ selectedColor, board }) => {
     const x = (e.clientX - rect.left) * scaleX;
     const y = (e.clientY - rect.top) * scaleY;
     
-    context.beginPath();
-    context.moveTo(x, y);
+    drawLayer.beginPath();
+    drawLayer.moveTo(x, y);
     setIsDrawing(true);
   };
 
@@ -56,14 +68,41 @@ const DrawingBoard = ({ selectedColor, board }) => {
     const x = (e.clientX - rect.left) * scaleX;
     const y = (e.clientY - rect.top) * scaleY;
     
-    context.lineTo(x, y);
-    context.stroke();
+    drawLayer.lineTo(x, y);
+    drawLayer.stroke();
+    
+    // Composite the drawing layer onto the main canvas
+    const ctx = canvasRef.current.getContext('2d');
+    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+    // Draw the stored background image
+    if (backgroundImage) {
+      ctx.drawImage(backgroundImage, 0, 0, ctx.canvas.width, ctx.canvas.height);
+    }
+    ctx.drawImage(drawLayer.canvas, 0, 0); // Draw user's drawing
   };
 
   const stopDrawing = () => {
-    context.closePath();
+    drawLayer.closePath();
     setIsDrawing(false);
   };
+
+  const clearCanvas = () => {
+    if (drawLayer && backgroundImage) {
+      // Clear drawing layer
+      drawLayer.clearRect(0, 0, drawLayer.canvas.width, drawLayer.canvas.height);
+      
+      // Reset main canvas with background
+      const ctx = canvasRef.current.getContext('2d');
+      ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+      ctx.drawImage(backgroundImage, 0, 0, ctx.canvas.width, ctx.canvas.height);
+    }
+  };
+
+  useEffect(() => {
+    if (onRef && drawLayer && backgroundImage) {
+      onRef({ clearCanvas });
+    }
+  }, [onRef, drawLayer, backgroundImage]);
 
   return (
     <Grid 
@@ -81,7 +120,8 @@ const DrawingBoard = ({ selectedColor, board }) => {
           border: '1px solid #ccc',
           borderRadius: '4px',
           maxWidth: '100%',
-          height: 'auto'
+          height: 'auto',
+          width: '1000px'
         }}
         onMouseDown={startDrawing}
         onMouseMove={draw}

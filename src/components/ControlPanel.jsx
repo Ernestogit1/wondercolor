@@ -1,7 +1,7 @@
 import React from 'react';
-import { Box, Button, Grid, Paper } from '@mui/material';
+import { Box, Button, Grid, Paper, Slider } from '@mui/material';
 
-const ControlPanel = () => (
+const ControlPanel = ({ brushSize, onBrushSizeChange, onEraser, isEraser, onClear }) => (
   <Grid 
     item xs={2}
     sx={{ 
@@ -12,16 +12,34 @@ const ControlPanel = () => (
     }}
   >
     <Paper elevation={3} sx={{ padding: 2, textAlign: 'center' }}>
-      <Box sx={{ height: 150, backgroundColor: '#f0f0f0', marginBottom: 2 }}>
-        Image Placeholder
+      <Box sx={{ marginBottom: 2 }}>
+        <p style={{ margin: '0 0 8px 0' }}>Brush Size</p>
+        <Slider
+          value={brushSize}
+          onChange={onBrushSizeChange}
+          min={1}
+          max={20}
+          valueLabelDisplay="auto"
+          sx={{ width: '150px' }}
+        />
       </Box>
-      <Button variant="contained" color="primary" sx={{ marginBottom: 1, width: '150px' }}>
-        Select Image
+      <Button 
+        variant={isEraser ? "contained" : "outlined"} 
+        color="primary" 
+        sx={{ marginBottom: 1, width: '150px' }}
+        onClick={onEraser}
+      >
+        {isEraser ? "Drawing Mode" : "Eraser"}
       </Button>
       <Button variant="contained" color="success" sx={{ marginBottom: 1, width: '150px' }}>
         Save
       </Button>
-      <Button variant="contained" color="error" sx={{ width: '150px' }}>
+      <Button 
+        variant="contained" 
+        color="error" 
+        sx={{ width: '150px' }}
+        onClick={onClear}
+      >
         Clear
       </Button>
     </Paper>

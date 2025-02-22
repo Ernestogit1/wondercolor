@@ -35,11 +35,32 @@ const App = () => {
   const paletteGroup2 = [palette8, palette9, palette10, palette11, palette12, palette13];
   const paletteGroup3 = [palette14, palette15, palette16, palette17, palette18, palette19, palette20];
   const [selectedColor, setSelectedColor] = useState('#000000');
+  const [brushSize, setBrushSize] = useState(2);
+  const [isEraser, setIsEraser] = useState(false);
+  const [boardRef, setBoardRef] = useState(null);
 
   const handleColorSelect = (palette) => {
-    // Extract color from palette filename
     const colorCode = palette.split('/').pop().split('.')[0];
     setSelectedColor(`#${colorCode}`);
+    setIsEraser(false); // Switch back to drawing mode when color is selected
+  };
+
+  const handleBrushSizeChange = (event, newValue) => {
+    setBrushSize(newValue);
+  };
+
+  const toggleEraser = () => {
+    setIsEraser(!isEraser);
+  };
+
+  const handleBoardRef = (ref) => {
+    setBoardRef(ref);
+  };
+
+  const handleClear = () => {
+    if (boardRef && boardRef.clearCanvas) {
+      boardRef.clearCanvas();
+    }
   };
 
   return (
@@ -60,8 +81,20 @@ const App = () => {
         <PaletteColumn palettes={paletteGroup1} onSelectColor={handleColorSelect} />
         <PaletteColumn palettes={paletteGroup2} onSelectColor={handleColorSelect} />
         <PaletteColumn palettes={paletteGroup3} onSelectColor={handleColorSelect} />
-        <DrawingBoard selectedColor={selectedColor} board={board}/>
-        <ControlPanel />
+        <DrawingBoard 
+          selectedColor={selectedColor} 
+          board={board}
+          brushSize={brushSize}
+          isEraser={isEraser}
+          onRef={handleBoardRef}
+        />
+        <ControlPanel 
+          brushSize={brushSize}
+          onBrushSizeChange={handleBrushSizeChange}
+          onEraser={toggleEraser}
+          isEraser={isEraser}
+          onClear={handleClear}
+        />
       </Grid>
     </Box>
   );
