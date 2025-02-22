@@ -1,7 +1,14 @@
 import React from 'react';
 import { Box, Button, Grid, Paper, Slider } from '@mui/material';
 
-const ControlPanel = ({ brushSize, onBrushSizeChange, onEraser, isEraser, onClear }) => (
+const ControlPanel = ({ 
+  brushSize, 
+  onBrushSizeChange, 
+  onEraser, 
+  isEraser, 
+  onClear,
+  guideImage
+}) => (
   <Grid 
     item xs={2}
     sx={{ 
@@ -12,7 +19,34 @@ const ControlPanel = ({ brushSize, onBrushSizeChange, onEraser, isEraser, onClea
     }}
   >
     <Paper elevation={3} sx={{ padding: 2, textAlign: 'center' }}>
-      <Box sx={{ marginBottom: 2 }}>
+      <Box 
+        sx={{ 
+          height: 150, 
+          backgroundColor: '#f0f0f0', 
+          marginBottom: 2,
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          overflow: 'hidden',
+          border: '1px solid #ccc',
+          borderRadius: '4px'
+        }}
+      >
+        {guideImage ? (
+          <img 
+            src={guideImage} 
+            alt="Color Guide" 
+            style={{ 
+              maxWidth: '100%', 
+              maxHeight: '100%',
+              objectFit: 'contain' 
+            }} 
+          />
+        ) : (
+          "No guide image"
+        )}
+      </Box>
+      <Box sx={{ marginBottom: 2, marginTop: 2 }}>
         <p style={{ margin: '0 0 8px 0' }}>Brush Size</p>
         <Slider
           value={brushSize}
@@ -31,7 +65,11 @@ const ControlPanel = ({ brushSize, onBrushSizeChange, onEraser, isEraser, onClea
       >
         {isEraser ? "Drawing Mode" : "Eraser"}
       </Button>
-      <Button variant="contained" color="success" sx={{ marginBottom: 1, width: '150px' }}>
+      <Button 
+        variant="contained" 
+        color="success" 
+        sx={{ marginBottom: 1, width: '150px' }}
+      >
         Save
       </Button>
       <Button 

@@ -30,6 +30,9 @@ import PaletteColumn from './components/PaletteColumn';
 import DrawingBoard from './components/DrawingBoard';
 import ControlPanel from './components/ControlPanel';
 
+import colorGuide from './assets/guide/color.jpg';
+import grayGuide from './assets/guide/gray.jpg';
+
 const App = () => {
   const paletteGroup1 = [palette1, palette2, palette3, palette4, palette5, palette6, palette7];
   const paletteGroup2 = [palette8, palette9, palette10, palette11, palette12, palette13];
@@ -38,6 +41,7 @@ const App = () => {
   const [brushSize, setBrushSize] = useState(2);
   const [isEraser, setIsEraser] = useState(false);
   const [boardRef, setBoardRef] = useState(null);
+  const [selectedImage, setSelectedImage] = useState(null);
 
   const handleColorSelect = (palette) => {
     const colorCode = palette.split('/').pop().split('.')[0];
@@ -60,6 +64,14 @@ const App = () => {
   const handleClear = () => {
     if (boardRef && boardRef.clearCanvas) {
       boardRef.clearCanvas();
+    }
+  };
+
+  const handleImageSelect = (event) => {
+    if (event.target.files && event.target.files[0]) {
+      const file = event.target.files[0];
+      const imageUrl = URL.createObjectURL(file);
+      setSelectedImage(imageUrl);
     }
   };
 
@@ -87,6 +99,7 @@ const App = () => {
           brushSize={brushSize}
           isEraser={isEraser}
           onRef={handleBoardRef}
+          grayscaleImage={grayGuide}  
         />
         <ControlPanel 
           brushSize={brushSize}
@@ -94,6 +107,7 @@ const App = () => {
           onEraser={toggleEraser}
           isEraser={isEraser}
           onClear={handleClear}
+          guideImage={colorGuide}  
         />
       </Grid>
     </Box>
