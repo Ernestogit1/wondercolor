@@ -3,6 +3,7 @@ import { Box, Grid } from '@mui/material';
 import bg from './assets/bg.png';
 import board from './assets/board.png';
 import logo from './assets/logo_w.png';
+import PaletteContainer from './components/PaletteContainer';
 
 import palette1 from './assets/palette/01ffff.png';
 import palette2 from './assets/palette/4E3478.png';
@@ -41,6 +42,7 @@ const App = () => {
   const [isEraser, setIsEraser] = useState(false);
   const [boardRef, setBoardRef] = useState(null);
   const [selectedGuideId, setSelectedGuideId] = useState(1);
+  const paletteGroups = [paletteGroup1, paletteGroup2, paletteGroup3];
 
   const selectedGuide = guideImages.find(guide => guide.id === selectedGuideId);
 
@@ -80,7 +82,7 @@ const App = () => {
     }
   };
 
-  return (
+   return (
     <Box
       sx={{
         backgroundImage: `url(${bg})`,
@@ -95,9 +97,12 @@ const App = () => {
     >
       <Logo logo={logo} />
       <Grid container spacing={1} sx={{ width: '90%', margin: '0 auto' }}>
-        <PaletteColumn palettes={paletteGroup1} onSelectColor={handleColorSelect} />
-        <PaletteColumn palettes={paletteGroup2} onSelectColor={handleColorSelect} />
-        <PaletteColumn palettes={paletteGroup3} onSelectColor={handleColorSelect} />
+        <Grid item xs={2} sx={{ display: 'flex', justifyContent: 'center' }}>
+          <PaletteContainer 
+            paletteGroups={paletteGroups} 
+            onSelectColor={handleColorSelect} 
+          />
+        </Grid>
         <DrawingBoard 
           selectedColor={selectedColor} 
           board={board}
